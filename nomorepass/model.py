@@ -21,7 +21,7 @@ class Storage(object):
         """
         pass
 
-    def delete(self, name: str) -> None:
+    def delete(self, key: str) -> None:
         """
         Delete (key, value) pair
         """
