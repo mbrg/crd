@@ -30,49 +30,54 @@ def test_key_error(storage_cls):
 
 
 @pytest.mark.parametrize("storage_cls", get_descendents(Storage))
-def test_insertion_deletion(storage_cls):
+def test_insertion_clear(storage_cls):
+
+    strg = storage_cls()
+    strg['a'] = 1
+    strg['a'] = 2
+    strg['b'] = 3
+
+    assert 2 == len(strg)
+    assert 2 == len(strg.keys())
+    assert 2 == len(strg.values())
+    assert 2 == len(strg.items())
+
+    strg.clear()
+    assert 0 == len(strg)
+
+
+@pytest.mark.parametrize("storage_cls", get_descendents(Storage))
+def test_copy(storage_cls):
 
     strg_1 = storage_cls()
-
     strg_1['a'] = 1
     strg_1['a'] = 2
     strg_1['b'] = 3
 
-    assert 2 == len(strg_1)
-    assert 2 == len(strg_1.keys())
-    assert 2 == len(strg_1.values())
-    assert 2 == len(strg_1.items())
-
-    ##
-
-    strg_2 = strg_1.copy()
+    strg_2 = storage_cls(**strg_1)
 
     assert 2 == len(strg_2)
     assert 2 == len(strg_2.keys())
     assert 2 == len(strg_2.values())
     assert 2 == len(strg_2.items())
 
+    del strg_2['a']
+    assert 1 == len(strg_2)
+    assert 2 == len(strg_1)
+
     strg_2.clear()
     assert 0 == len(strg_2)
     assert 2 == len(strg_1)
 
-    ##
 
-    strg_3 = storage_cls(**strg_1)
+@pytest.mark.parametrize("storage_cls", get_descendents(Storage))
+def test_delete(storage_cls):
 
-    assert 2 == len(strg_3)
-    assert 2 == len(strg_3.keys())
-    assert 2 == len(strg_3.values())
-    assert 2 == len(strg_3.items())
+    strg = storage_cls()
+    strg['a'] = 1
+    strg['a'] = 2
+    strg['b'] = 3
 
-    strg_3.clear()
-    assert 0 == len(strg_3)
-    assert 2 == len(strg_1)
+    del strg['a']
 
-    ##
-
-    strg_4 = strg_1.copy()
-    del strg_4['a']
-
-    assert 1 == len(strg_4)
-    assert 2 == len(strg_1)
+    assert 1 == len(strg)
