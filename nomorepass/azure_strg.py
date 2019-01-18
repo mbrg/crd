@@ -13,7 +13,7 @@ class AzureKeyVaultStorage(Storage):
     """
 
     @staticmethod
-    def init_connection(tenant_id, session_mem):
+    def _init_connection(tenant_id, session_mem):
 
         auth_context = adal.AuthenticationContext('https://login.microsoftonline.com/%s' % tenant_id)
         xplat_client_id = '04b07795-8ddb-461a-bbee-02f9e1bf7b46'  # Azure CLI
@@ -35,41 +35,41 @@ class AzureKeyVaultStorage(Storage):
         return conn
 
     def __init__(self, vault : str, tenant_id : str, *args, **kwargs):
-        self.vault = vault
+        self._vault = vault
 
-        self.session_mem = {}
-        self.conn = self.init_connection(tenant_id, self.session_mem)
+        self._session_mem = {}
+        self._conn = self._init_connection(tenant_id, self._session_mem)
 
         self.update(dict(*args, **kwargs))
 
     @property
-    def vault_uri(self):
-        return "https://%s.vault.azure.net/" % self.vault
+    def _vault_uri(self):
+        return "https://%s.vault.azure.net/" % self._vault
 
     def __getitem__(self, key):
         try:
-            secret_bundle = self.conn.get_secret(self.vault_uri, key, KeyVaultId.version_none)
+            secret_bundle = self._conn.get_secret(self._vault_uri, key, KeyVaultId.version_none)
             return secret_bundle.value
         except KeyVaultErrorException as e:
             raise KeyError('KeyVaultErrorException: ' + e.message)
 
     def __setitem__(self, key, value):
-        self.conn.set_secret(self.vault_uri, key, value)
+        self._conn.set_secret(self._vault_uri, key, value)
 
     def __delitem__(self, key):
         try:
-            self.conn.delete_secret(self.vault_uri, key)
+            self._conn.delete_secret(self._vault_uri, key)
         except KeyVaultErrorException as e:
             raise KeyError('KeyVaultErrorException: ' + e.message)
 
     def __iter__(self):
-        secret_item_paged = self.conn.get_secrets(self.vault_uri)
+        secret_item_paged = self._conn.get_secrets(self._vault_uri)
 
         for sec in secret_item_paged:
-            yield sec.id.replace(self.vault_uri + 'secrets/', '')
+            yield sec.id.replace(self._vault_uri + 'secrets/', '')
 
     def __len__(self):
         return len(list(self.__iter__()))
 
     def __str__(self):
-        return '%s(%s)' % (self.__class__.__name__, self.vault)
+        return '%s(%s)' % (self.__class__.__name__, self._vault)

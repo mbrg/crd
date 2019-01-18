@@ -11,20 +11,20 @@ class VirtualStorage(Storage):
     """
 
     def __init__(self, *args, **kwargs):
-        self.store = dict()
+        self._store = dict()
         self.update(dict(*args, **kwargs))
 
     def __getitem__(self, key):
-        return self.store[key]
+        return self._store[key]
 
     def __setitem__(self, key, value):
-        self.store[key] = value
+        self._store[key] = value
 
     def __delitem__(self, key):
-        del self.store[key]
+        del self._store[key]
 
     def __iter__(self):
-        return iter(self.store)
+        return iter(self._store)
 
     def __len__(self):
-        return len(self.store)
+        return len(self._store)
