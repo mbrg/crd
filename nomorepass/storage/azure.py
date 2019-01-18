@@ -10,6 +10,8 @@ class AzureKeyVaultStorage(Storage):
     Azure KeyVault persistent Storage
     Based on: https://github.com/Azure/azure-sdk-for-python/blob/master/
               azure-keyvault/azure/keyvault/v2016_10_01/key_vault_client.py
+              https://github.com/Azure-Samples/key-vault-python-authentication/
+              blob/master/authentication_sample.py
     """
 
     @staticmethod
