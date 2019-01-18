@@ -1,6 +1,6 @@
 import pytest
 
-from storage import Storage
+from storage import Storage, AzureKeyVaultStorage
 
 
 def get_descendents(cls):
@@ -11,7 +11,7 @@ def get_descendents(cls):
         [s for c in cls.__subclasses__() for s in get_descendents(c)])
 
 
-@pytest.mark.parametrize("storage_cls", get_descendents(Storage))
+@pytest.mark.parametrize("storage_cls", get_descendents(Storage) - {AzureKeyVaultStorage, })
 def test_key_error(storage_cls):
 
     strg = storage_cls()
@@ -29,7 +29,7 @@ def test_key_error(storage_cls):
         del strg["none existing key"]
 
 
-@pytest.mark.parametrize("storage_cls", get_descendents(Storage))
+@pytest.mark.parametrize("storage_cls", get_descendents(Storage) - {AzureKeyVaultStorage, })
 def test_insertion_clear(storage_cls):
 
     strg = storage_cls()
@@ -46,7 +46,7 @@ def test_insertion_clear(storage_cls):
     assert 0 == len(strg)
 
 
-@pytest.mark.parametrize("storage_cls", get_descendents(Storage))
+@pytest.mark.parametrize("storage_cls", get_descendents(Storage) - {AzureKeyVaultStorage, })
 def test_copy(storage_cls):
 
     strg_1 = storage_cls()
@@ -70,7 +70,7 @@ def test_copy(storage_cls):
     assert 2 == len(strg_1)
 
 
-@pytest.mark.parametrize("storage_cls", get_descendents(Storage))
+@pytest.mark.parametrize("storage_cls", get_descendents(Storage) - {AzureKeyVaultStorage, })
 def test_delete(storage_cls):
 
     strg = storage_cls()

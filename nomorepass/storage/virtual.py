@@ -1,8 +1,4 @@
-import collections
-
-
-class Storage(collections.MutableMapping):
-    pass
+from storage import Storage
 
 
 class VirtualStorage(Storage):
