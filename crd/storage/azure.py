@@ -1,4 +1,4 @@
-from azure.keyvault.models import KeyVaultErrorException, SecretItemPaged
+from azure.keyvault.models import KeyVaultErrorException
 from azure.keyvault import KeyVaultClient, KeyVaultAuthentication, KeyVaultId
 import adal
 
