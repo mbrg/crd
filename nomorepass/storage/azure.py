@@ -74,4 +74,11 @@ class AzureKeyVaultStorage(Storage):
         return len(list(self.__iter__()))
 
     def __str__(self):
-        return '%s(%s)' % (self.__class__.__name__, self._vault)
+        return '%s(%s)' % (super(self, self.__class__).__str__(), self._vault)
+
+    @classmethod
+    def get_arguments(cls):
+        return [
+            ("-v", "--vault-name", dict(type=str, required=True, help="azure keyvault name")),
+            ("-t", "--tenant-id", dict(type=str, required=True, help="azure-active-directory tenant id"))
+        ]

@@ -24,3 +24,7 @@ class VirtualStorage(Storage):
 
     def __len__(self):
         return len(self._store)
+
+    @classmethod
+    def get_arguments(cls):
+        return []
