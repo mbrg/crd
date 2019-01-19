@@ -1,6 +1,8 @@
 import pytest
+from typing import Type
+from os import environ
 
-from storage import Storage, AzureKeyVaultStorage
+from storage import Storage
 
 
 def get_descendents(cls):
@@ -11,10 +13,20 @@ def get_descendents(cls):
         [s for c in cls.__subclasses__() for s in get_descendents(c)])
 
 
-@pytest.mark.parametrize("storage_cls", get_descendents(Storage) - {AzureKeyVaultStorage, })
-def test_key_error(storage_cls):
+def init_storage(storage_cls: Type[Storage], *args, **kwargs):
+    arguments = [arg[1][2:] for arg in storage_cls.get_arguments()]  # arg[1] is assumed to be of format --name
+    try:
+        feed = {arg.replace('-', '_'): environ[arg] for arg in arguments}
+    except KeyError:
+        raise KeyError("The following environment variables missing: %s" % args)
 
-    strg = storage_cls()
+    return storage_cls(*args, **feed, **kwargs)
+
+
+@pytest.mark.parametrize("storage_cls", get_descendents(Storage))
+def test_key_error(storage_cls: Type[Storage]):
+
+    strg = init_storage(storage_cls)
 
     with pytest.raises(KeyError):
         strg.pop("none existing key")
@@ -29,10 +41,10 @@ def test_key_error(storage_cls):
         del strg["none existing key"]
 
 
-@pytest.mark.parametrize("storage_cls", get_descendents(Storage) - {AzureKeyVaultStorage, })
-def test_insertion_clear(storage_cls):
+@pytest.mark.parametrize("storage_cls", get_descendents(Storage))
+def test_insertion_clear(storage_cls: Type[Storage]):
 
-    strg = storage_cls()
+    strg = init_storage(storage_cls)
     strg['a'] = 1
     strg['a'] = 2
     strg['b'] = 3
@@ -46,15 +58,15 @@ def test_insertion_clear(storage_cls):
     assert 0 == len(strg)
 
 
-@pytest.mark.parametrize("storage_cls", get_descendents(Storage) - {AzureKeyVaultStorage, })
-def test_copy(storage_cls):
+@pytest.mark.parametrize("storage_cls", get_descendents(Storage))
+def test_copy(storage_cls: Type[Storage]):
 
-    strg_1 = storage_cls()
+    strg_1 = init_storage(storage_cls)
     strg_1['a'] = 1
     strg_1['a'] = 2
     strg_1['b'] = 3
 
-    strg_2 = storage_cls(**strg_1)
+    strg_2 = init_storage(storage_cls, **strg_1)
 
     assert 2 == len(strg_2)
     assert 2 == len(strg_2.keys())
@@ -70,10 +82,10 @@ def test_copy(storage_cls):
     assert 2 == len(strg_1)
 
 
-@pytest.mark.parametrize("storage_cls", get_descendents(Storage) - {AzureKeyVaultStorage, })
-def test_delete(storage_cls):
+@pytest.mark.parametrize("storage_cls", get_descendents(Storage))
+def test_delete(storage_cls: Type[Storage]):
 
-    strg = storage_cls()
+    strg = init_storage(storage_cls)
     strg['a'] = 1
     strg['a'] = 2
     strg['b'] = 3

@@ -109,3 +109,4 @@ venv.bak/
 
 # local cache
 config.json
+log.txt

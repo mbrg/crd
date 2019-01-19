@@ -36,7 +36,7 @@ class AzureKeyVaultStorage(Storage):
 
         return conn
 
-    def __init__(self, vault : str, tenant_id : str, *args, **kwargs):
+    def __init__(self, vault: str, tenant_id: str, *args, **kwargs):
         self._vault = vault
 
         self._session_mem = {}
@@ -79,6 +79,6 @@ class AzureKeyVaultStorage(Storage):
     @classmethod
     def get_arguments(cls):
         return [
-            ("-v", "--vault-name", dict(type=str, required=True, help="azure keyvault name")),
+            ("-v", "--vault", dict(type=str, required=True, help="azure keyvault name")),
             ("-t", "--tenant-id", dict(type=str, required=True, help="azure-active-directory tenant id"))
         ]
