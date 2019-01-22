@@ -109,10 +109,11 @@ def run_get(args):
         key_options = dict(enumerate(sorted([k for k in strg.keys() if args.key in k])))
         if len(key_options) > 0:
 
-            if len(key_options) > 1:
-                key = key_options[input_choice(key_options)]
-            else:
+            if len(key_options) == 1 and args.key != "":
                 key = key_options[0]
+            else:
+                key = key_options[input_choice(key_options)]
+
 
             raw_secret = strg[key]
 
