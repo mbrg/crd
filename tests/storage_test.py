@@ -18,7 +18,7 @@ def init_storage(storage_cls: Type[Storage], *args, **kwargs):
     try:
         feed = {arg.replace('-', '_'): environ[arg] for arg in arguments}
     except KeyError:
-        raise KeyError("The following environment variables missing: %s" % args)
+        raise KeyError("The following environment variables missing: %s" % arguments)
 
     return storage_cls(*args, **feed, **kwargs)
 
@@ -40,6 +40,9 @@ def test_key_error(storage_cls: Type[Storage]):
     with pytest.raises(KeyError):
         del strg["none existing key"]
 
+    # cleanup
+    strg.clear()
+
 
 @pytest.mark.parametrize("storage_cls", get_descendents(Storage))
 def test_insertion_clear(storage_cls: Type[Storage]):
@@ -56,6 +59,9 @@ def test_insertion_clear(storage_cls: Type[Storage]):
 
     strg.clear()
     assert 0 == len(strg)
+
+    # cleanup
+    strg.clear()
 
 
 @pytest.mark.parametrize("storage_cls", get_descendents(Storage))
@@ -75,11 +81,13 @@ def test_copy(storage_cls: Type[Storage]):
 
     del strg_2['a']
     assert 1 == len(strg_2)
-    assert 2 == len(strg_1)
 
     strg_2.clear()
     assert 0 == len(strg_2)
-    assert 2 == len(strg_1)
+
+    # cleanup
+    strg_1.clear()
+    strg_2.clear()
 
 
 @pytest.mark.parametrize("storage_cls", get_descendents(Storage))
@@ -93,3 +101,6 @@ def test_delete(storage_cls: Type[Storage]):
     del strg['a']
 
     assert 1 == len(strg)
+
+    # cleanup
+    strg.clear()
