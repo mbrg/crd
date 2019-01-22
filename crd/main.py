@@ -39,6 +39,10 @@ class Colors:
     UNDERLINE = '\033[4m'
 
 
+def crd_print(*args, **kwargs):
+    print(Colors.OKBLUE + "crd >" + Colors.ENDC, *args, **kwargs)
+
+
 def parse_arguments(argv):
 
     parser = argparse.ArgumentParser()
@@ -70,7 +74,7 @@ def run_config(args):
     with ConfigurationManager() as cfg:
 
         if args.show:
-            print(cfg.cache)
+            crd_print(cfg.cache)
 
         if args.storage is not None:
             cfg.cache = args.__dict__
@@ -78,7 +82,7 @@ def run_config(args):
 
 def input_choice(options: dict):
 
-    print("Found %d options:" % len(options))
+    crd_print("Found %d options:" % len(options))
     [print("\t%d | %s" % (k, v)) for k, v in options.items()]
 
     choice = -1
@@ -119,9 +123,9 @@ def run_get(args):
                 secret = raw_secret
 
             pyperclip.copy(secret)
-            print(Colors.OKGREEN + "Secret %s was copied to clipboard." % key + Colors.ENDC)
+            crd_print(Colors.OKGREEN + "Secret %s was copied to clipboard." % key + Colors.ENDC)
         else:
-            print("Found no relevant secrets, please try another query.")
+            crd_print("Found no relevant secrets, please try another query.")
 
 
 def run_set(args):
@@ -132,7 +136,7 @@ def run_set(args):
         strg = init_storage(NAME_TO_MODEL[cfg.cache['storage']], **cfg.cache)
 
         strg[args.key] = getpass.getpass()
-        print(Colors.OKGREEN + "Secret %s stored safely." % args.key + Colors.ENDC)
+        crd_print(Colors.OKGREEN + "Secret %s stored safely." % args.key + Colors.ENDC)
 
 
 def main(argv=None):
