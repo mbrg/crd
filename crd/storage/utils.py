@@ -1,5 +1,8 @@
 import json
 from json import JSONDecodeError
+from typing import Type
+
+from storage import Storage
 
 
 def get_err_msg(err: Exception) -> str:
@@ -29,3 +32,13 @@ def json_to_str(j) -> str:
 def str_to_json(s: str):
     raw_json_obj = json.dumps(s)
     return raw_json_obj
+
+
+def init_storage(storage_cls: Type[Storage], **kwargs):
+    arguments = [arg[1][2:] for arg in storage_cls.get_arguments()]  # arg[1] is assumed to be of format --name
+    try:
+        feed = {arg.replace('-', '_'): kwargs[arg.replace('-', '_')] for arg in arguments}
+    except KeyError:
+        raise KeyError("The following variables missing: %s" % arguments)
+
+    return storage_cls(**feed)

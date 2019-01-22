@@ -1,14 +1,15 @@
 import pytest
 from typing import Type
+from os import environ
 
-from storage import Storage
-from tests.utils import get_descendents, init_storage
+from storage import Storage, init_storage
+from tests.utils import get_descendents
 
 
 @pytest.mark.parametrize("storage_cls", get_descendents(Storage))
 def test_key_error(storage_cls: Type[Storage]):
 
-    strg = init_storage(storage_cls)
+    strg = init_storage(storage_cls, **environ)
 
     with pytest.raises(KeyError):
         strg.pop("none existing key")
@@ -29,7 +30,7 @@ def test_key_error(storage_cls: Type[Storage]):
 @pytest.mark.parametrize("storage_cls", get_descendents(Storage))
 def test_insertion_clear(storage_cls: Type[Storage]):
 
-    strg = init_storage(storage_cls)
+    strg = init_storage(storage_cls, **environ)
     strg['a'] = 1
     strg['a'] = 2
     strg['b'] = 3
@@ -49,12 +50,13 @@ def test_insertion_clear(storage_cls: Type[Storage]):
 @pytest.mark.parametrize("storage_cls", get_descendents(Storage))
 def test_copy(storage_cls: Type[Storage]):
 
-    strg_1 = init_storage(storage_cls)
+    strg_1 = init_storage(storage_cls, **environ)
     strg_1['a'] = 1
     strg_1['a'] = 2
     strg_1['b'] = 3
 
-    strg_2 = init_storage(storage_cls, **strg_1)
+    strg_2 = init_storage(storage_cls, **environ)
+    strg_2.update(**strg_1)
 
     assert 2 == len(strg_2)
     assert 2 == len(strg_2.keys())
@@ -75,7 +77,7 @@ def test_copy(storage_cls: Type[Storage]):
 @pytest.mark.parametrize("storage_cls", get_descendents(Storage))
 def test_delete(storage_cls: Type[Storage]):
 
-    strg = init_storage(storage_cls)
+    strg = init_storage(storage_cls, **environ)
     strg['a'] = 1
     strg['a'] = 2
     strg['b'] = 3
