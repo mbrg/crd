@@ -3,6 +3,9 @@ import keyring
 from storage import Storage
 from storage.utils import get_err_msg, json_to_str, str_to_json, JSONDecodeError
 
+import logging
+logger = logging.getLogger("crd")
+
 
 class VirtualStorage(Storage):
     """
@@ -12,6 +15,7 @@ class VirtualStorage(Storage):
     def __init__(self, *args, **kwargs):
         self._store = dict()
         self.update(dict(*args, **kwargs))
+        logger.info(str(self))
 
     def __getitem__(self, key):
         return self._store[key]
@@ -43,9 +47,9 @@ class KeyringStorage(Storage):
 
         # holds a list of current keys as a special secret
         self._keys = keys_name
-        self._unmanaged_set(self._keys, [])
 
         self.update(dict(*args, **kwargs))
+        logger.info("%s keys=%s" % (str(self), keys_name))
 
     @property
     def __key_set(self) -> set:

@@ -1,11 +1,17 @@
 from azure.keyvault.models import KeyVaultErrorException
 from azure.keyvault import KeyVaultClient, KeyVaultAuthentication, KeyVaultId
+from msrest.exceptions import ClientRequestError
+
 import adal
+
 from datetime import datetime
 
 from storage import Storage
 from storage.virtual import KeyringStorage
 from storage.utils import to_int_if_possible
+
+import logging
+logger = logging.getLogger("crd")
 
 
 class AzureKeyVaultStorage(Storage):
@@ -42,6 +48,16 @@ class AzureKeyVaultStorage(Storage):
 
         conn = KeyVaultClient(KeyVaultAuthentication(auth_handler))
 
+        # validate connection
+        try:
+            itr = conn.get_secrets(self._vault_uri, maxresults=1)
+            next(itr)
+        except ClientRequestError:
+            raise ValueError("Connection error occurred. Please validate your arguments are correct: "
+                             "vault=%s, tenant_id=%s" % (self._vault, tenant_id))
+        except StopIteration:
+            pass
+
         return conn
 
     def __init__(self, vault: str, tenant_id: str, *args, **kwargs):
@@ -51,6 +67,7 @@ class AzureKeyVaultStorage(Storage):
         self._conn = self._init_connection(tenant_id)
 
         self.update(dict(*args, **kwargs))
+        logger.info("%s tenant=%s, vault=%s" % (str(self), tenant_id, vault))
 
     @property
     def _vault_uri(self):
