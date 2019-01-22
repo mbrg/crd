@@ -1,7 +1,7 @@
 import keyring
-import json
 
 from storage import Storage
+from storage.utils import get_err_msg, json_to_str, str_to_json, JSONDecodeError
 
 
 class VirtualStorage(Storage):
@@ -49,33 +49,30 @@ class KeyringStorage(Storage):
 
     @property
     def __key_set(self) -> set:
-        return set(self[self._keys])
+        keys_list = self[self._keys]
+        return set([] if keys_list is None else keys_list)
 
-    def _unmanaged_set(self, key, value):
+    def _unmanaged_set(self, key: str, value):
         try:
-            secret = json.dumps(value)
+            secret = str_to_json(value)
             keyring.set_password(self._service, key, secret)
-        except json.JSONDecodeError as e:
-            raise json.JSONDecodeError('Secret for key %s must be Picklable' % key)
+        except JSONDecodeError as e:
+            raise JSONDecodeError('Secret for key %s must be Picklable' % key)
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str):
         try:
             encoded_secret = keyring.get_password(self._service, key)
-            secret = json.loads(encoded_secret)
-        except (TypeError, json.JSONDecodeError) as e:
-            if hasattr(e, 'message'):
-                msg = e.message
-            if hasattr(e, 'args') and len(e.args) > 0:
-                msg = e.args[0]
-            raise KeyError('TypeError: ' + msg)
+            secret = json_to_str(encoded_secret)
+        except (TypeError, JSONDecodeError) as e:
+            raise KeyError('TypeError: ' + get_err_msg(e))
         else:
             return secret
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: str, value):
         self._unmanaged_set(key, value)
         self._unmanaged_set(self._keys, list(self.__key_set.union({key})))
 
-    def __delitem__(self, key):
+    def __delitem__(self, key: str):
         try:
             keyring.delete_password(self._service, key)
             self._unmanaged_set(self._keys, list(self.__key_set.difference({key})))
@@ -87,6 +84,9 @@ class KeyringStorage(Storage):
 
     def __len__(self):
         return len(self[self._keys])
+
+    def __str__(self):
+        return '%s(%s)' % (super(type(self), self).__str__(), self._service)
 
     @classmethod
     def get_arguments(cls):
