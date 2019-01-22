@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='crd',
-    version='0.0.1',
+    version='0.0.2',
     packages=find_packages(),
     url='https://github.com/mibarg/crd',
     license='MIT',
@@ -15,7 +15,7 @@ setup(
         'adal',
         'argparse',
         'pyperclip',
-        'getpass'
+        'keyring'
     ],
     scripts=['crd/main.py'],
     setup_requires=['pytest-runner'],
