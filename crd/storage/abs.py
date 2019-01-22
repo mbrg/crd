@@ -4,7 +4,6 @@ from typing import List, Tuple
 
 
 class Storage(collections.MutableMapping):
-    pass
 
     @classmethod
     @abc.abstractmethod
