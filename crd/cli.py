@@ -87,7 +87,7 @@ def input_choice(options: dict):
 
     choice = -1
     while not (isinstance(choice, int) and 0 <= choice <= len(options) - 1):
-        raw_choice = input("Choose {%d..%d} " % (0, len(options) - 1))
+        raw_choice = input("Choose {%d..%d} or q to quit" % (0, len(options) - 1))
         if raw_choice in ('q', 'Q'):
             exit(0)
 
