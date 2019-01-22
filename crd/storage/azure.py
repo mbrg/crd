@@ -1,8 +1,11 @@
 from azure.keyvault.models import KeyVaultErrorException
 from azure.keyvault import KeyVaultClient, KeyVaultAuthentication, KeyVaultId
 import adal
+from datetime import datetime
 
 from storage import Storage
+from storage.virtual import KeyringStorage
+from storage.utils import to_int_if_possible
 
 
 class AzureKeyVaultStorage(Storage):
@@ -14,22 +17,27 @@ class AzureKeyVaultStorage(Storage):
               blob/master/authentication_sample.py
     """
 
-    @staticmethod
-    def _init_connection(tenant_id, session_mem):
+    CLIENT_ID = '04b07795-8ddb-461a-bbee-02f9e1bf7b46'  # Azure CLI
+
+    def _init_connection(self, tenant_id):
 
         auth_context = adal.AuthenticationContext('https://login.microsoftonline.com/%s' % tenant_id)
-        xplat_client_id = '04b07795-8ddb-461a-bbee-02f9e1bf7b46'  # Azure CLI
 
         def auth_handler(server, resource, scope):
-            if (server, resource, scope) not in session_mem:
-                user_code_info = auth_context.acquire_user_code(resource,
-                                                                xplat_client_id)
+
+            # retrieve last used token (if exists)
+            token_key = str((server, resource, scope))
+            token = self._mem.get(token_key, {'expiresOn': datetime.now()})
+
+            # time to refresh token?
+            if datetime.now() > datetime.strptime(token['expiresOn'], "%Y-%m-%d %H:%M:%S.%f"):
+                user_code_info = auth_context.acquire_user_code(resource, self.CLIENT_ID)
 
                 print(user_code_info['message'])
-                session_mem[(server, resource, scope)] = auth_context.acquire_token_with_device_code(
-                    resource=resource, client_id=xplat_client_id, user_code_info=user_code_info)
+                token = auth_context.acquire_token_with_device_code(
+                    resource=resource, client_id=self.CLIENT_ID, user_code_info=user_code_info)
+                self._mem[token_key] = token
 
-            token = session_mem[(server, resource, scope)]
             return token['tokenType'], token['accessToken']
 
         conn = KeyVaultClient(KeyVaultAuthentication(auth_handler))
@@ -39,8 +47,8 @@ class AzureKeyVaultStorage(Storage):
     def __init__(self, vault: str, tenant_id: str, *args, **kwargs):
         self._vault = vault
 
-        self._session_mem = {}
-        self._conn = self._init_connection(tenant_id, self._session_mem)
+        self._mem = KeyringStorage(service_name='AzureKeyVaultStorage')  # persistent storage to hold session tokens
+        self._conn = self._init_connection(tenant_id)
 
         self.update(dict(*args, **kwargs))
 
@@ -51,7 +59,8 @@ class AzureKeyVaultStorage(Storage):
     def __getitem__(self, key):
         try:
             secret_bundle = self._conn.get_secret(self._vault_uri, key, KeyVaultId.version_none)
-            return secret_bundle.value
+            secret_bundle_val = to_int_if_possible(secret_bundle.value)
+            return secret_bundle_val
         except KeyVaultErrorException as e:
             raise KeyError('KeyVaultErrorException: ' + e.message)
 
@@ -74,7 +83,7 @@ class AzureKeyVaultStorage(Storage):
         return len(list(self.__iter__()))
 
     def __str__(self):
-        return '%s(%s)' % (super(self, self.__class__).__str__(), self._vault)
+        return '%s(%s)' % (super(type(self), self).__str__(), self._vault)
 
     @classmethod
     def get_arguments(cls):
