@@ -2,7 +2,7 @@ import pytest
 from typing import Type
 from os import environ
 
-from storage import Storage, init_storage
+from crd.storage import Storage, init_storage
 from tests.utils import get_descendents
 
 

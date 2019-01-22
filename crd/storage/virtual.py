@@ -1,7 +1,7 @@
 import keyring
 
-from storage import Storage
-from storage.utils import get_err_msg, json_to_str, str_to_json, JSONDecodeError
+from crd.storage import Storage
+from crd.storage.utils import get_err_msg, json_to_str, str_to_json, JSONDecodeError
 
 import logging
 logger = logging.getLogger("crd")

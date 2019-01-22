@@ -2,7 +2,7 @@ import json
 from json import JSONDecodeError
 from typing import Type
 
-from storage import Storage
+from crd.storage import Storage
 
 
 def get_err_msg(err: Exception) -> str:

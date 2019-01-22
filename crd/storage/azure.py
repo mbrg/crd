@@ -6,9 +6,9 @@ import adal
 
 from datetime import datetime
 
-from storage import Storage
-from storage.virtual import KeyringStorage
-from storage.utils import to_int_if_possible
+from crd.storage import Storage
+from crd.storage.virtual import KeyringStorage
+from crd.storage.utils import to_int_if_possible
 
 import logging
 logger = logging.getLogger("crd")

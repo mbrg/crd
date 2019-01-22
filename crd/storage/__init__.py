@@ -1,7 +1,7 @@
-from .abs import Storage
-from .azure import AzureKeyVaultStorage
-from .virtual import VirtualStorage, KeyringStorage
-from .utils import init_storage
+from crd.storage.abs import Storage
+from crd.storage.azure import AzureKeyVaultStorage
+from crd.storage.virtual import VirtualStorage, KeyringStorage
+from crd.storage.utils import init_storage
 
 MODELS = (
     ("virtual", "in-memory none-persistent storage", VirtualStorage),

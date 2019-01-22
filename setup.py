@@ -17,7 +17,10 @@ setup(
         'pyperclip',
         'keyring'
     ],
-    scripts=['crd/main.py'],
+    scripts=['crd/cli.py'],
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
+    entry_points = {
+        'console_scripts': ['crd=crd.cli:main'],
+    }
 )
