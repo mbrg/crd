@@ -5,7 +5,6 @@ import logging
 import pyperclip
 import getpass
 
-
 from crd.storage import MODELS, NAME_TO_MODEL, init_storage
 from crd.config import ConfigurationManager
 
@@ -43,7 +42,7 @@ def crd_print(*args, **kwargs):
     print(Colors.BLUE + "crd >" + Colors.END, *args, **kwargs)
 
 
-def parse_arguments(argv):
+def parse_arguments(argv=None):
 
     parser = argparse.ArgumentParser()
     # noinspection PyProtectedMember,PyPep8
