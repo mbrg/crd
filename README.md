@@ -1,6 +1,10 @@
 
 ## *crd* - your private secret storage, with a familiar dict API
 
+A simple secret manager which uses your own secret storage as backend.
+_crd_ provides a familiar dict-like API access your secret storage, 
+and a CLI to perform daily tasks (get/set/del secrets).
+
 Install with: `pip install crd`
 
 Quick reference:
