@@ -30,8 +30,8 @@ def configure_logger(logger_name=None, level='INFO'):
 
 class Colors:
     HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
+    BLUE = '\033[94m'
+    GREEN = '\033[92m'
     WARNING = '\033[93m'
     FAIL = '\033[91m'
     ENDC = '\033[0m'
@@ -40,7 +40,7 @@ class Colors:
 
 
 def crd_print(*args, **kwargs):
-    print(Colors.OKBLUE + "crd >" + Colors.ENDC, *args, **kwargs)
+    print(Colors.BLUE + "crd >" + Colors.ENDC, *args, **kwargs)
 
 
 def parse_arguments(argv):
@@ -87,14 +87,16 @@ def input_choice(options: dict):
 
     choice = -1
     while not (isinstance(choice, int) and 0 <= choice <= len(options) - 1):
-        raw_choice = input("Choose {%d..%d} or q to quit" % (0, len(options) - 1))
+        crd_print("Choose {%d..%d} or q to quit: " % (0, len(options) - 1), end='')
+        raw_choice = input()
         if raw_choice in ('q', 'Q'):
             exit(0)
-
         try:
             choice = int(raw_choice)
         except (ValueError, TypeError):
             choice = -1
+        except KeyboardInterrupt:
+            exit(0)
 
     return choice
 
@@ -124,7 +126,7 @@ def run_get(args):
                 secret = raw_secret
 
             pyperclip.copy(secret)
-            crd_print(Colors.OKGREEN + "Secret %s was copied to clipboard." % key + Colors.ENDC)
+            crd_print(Colors.GREEN + "Secret %s was copied to clipboard." % key + Colors.ENDC)
         else:
             crd_print("Found no relevant secrets, please try another query.")
 
@@ -136,8 +138,8 @@ def run_set(args):
     with ConfigurationManager() as cfg:
         strg = init_storage(NAME_TO_MODEL[cfg.cache['storage']], **cfg.cache)
 
-        strg[args.key] = getpass.getpass()
-        crd_print(Colors.OKGREEN + "Secret %s stored safely." % args.key + Colors.ENDC)
+        strg[args.key] = getpass.getpass("Secret: ")
+        crd_print(Colors.GREEN + "Secret %s stored safely." % args.key + Colors.ENDC)
 
 
 def main(argv=None):
