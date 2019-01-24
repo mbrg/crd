@@ -1,4 +1,8 @@
 import json
+from os.path import realpath, join, dirname
+
+import logging
+logger = logging.getLogger("crd")
 
 
 class ConfigurationManager(object):
@@ -7,9 +11,10 @@ class ConfigurationManager(object):
     In charge of persisting user configuration via local cache
     """
 
-    CACHE_FILE_DEFAULT = "config.json"
+    CACHE_FILE_DEFAULT = join(dirname(dirname(realpath(__file__))), "config.json")
 
     def __init__(self, cache_file: str = CACHE_FILE_DEFAULT):
+        logger.info("Using the following path for config cache: %s" % cache_file)
         self._cache_file = cache_file
         self.cache = {}
 
