@@ -63,6 +63,9 @@ def parse_arguments(argv):
     cmnd_set = commands.add_parser("set", help="set secrets to storage")
     cmnd_set.add_argument('-k', '--key', type=str, help="unique secret name")
 
+    cmnd_set = commands.add_parser("del", help="delete secrets from storage")
+    cmnd_set.add_argument('-k', '--key', type=str, help="unique secret name")
+
     args = parser.parse_args(argv)
     return args
 
@@ -142,6 +145,28 @@ def run_set(args):
         crd_print(Colors.GREEN + "Secret %s stored safely." % args.key + Colors.ENDC)
 
 
+def run_del(args):
+    """
+    Delete secrets from storage
+    """
+    with ConfigurationManager() as cfg:
+        strg = init_storage(NAME_TO_MODEL[cfg.cache['storage']], **cfg.cache)
+
+        crd_print(Colors.WARNING + "Are you sure you want to delete secret %s? (y/Y) to accept: " % args.key
+                  + Colors.ENDC, end='')
+        choice = input()
+
+        if choice in ('y', 'Y'):
+            try:
+                del strg[args.key]
+            except KeyError:
+                crd_print(Colors.WARNING + "Couldn't find secret %s." % args.key + Colors.ENDC)
+            else:
+                crd_print(Colors.GREEN + "Secret %s deleted successfully." % args.key + Colors.ENDC)
+        else:
+            crd_print("Secret %s was not deleted." % args.key)
+
+
 def main(argv=None):
     args = parse_arguments(argv)
     configure_logger("crd", args.log)
@@ -152,6 +177,8 @@ def main(argv=None):
         run_get(args)
     if args.command == "set":
         run_set(args)
+    if args.command == "del":
+        run_del(args)
 
 
 if __name__ == "__main__":
