@@ -6,7 +6,7 @@ from crd.storage import Storage, VirtualStorage, init_storage
 from tests.utils import get_descendents
 
 
-@pytest.mark.parametrize("storage_cls", get_descendents(Storage, filtered_by={VirtualStorage}))
+@pytest.mark.parametrize("storage_cls", get_descendents(Storage, filtered_by=VirtualStorage))
 def test_open_close(storage_cls: Type[Storage]):
 
     strg = init_storage(storage_cls, **environ)

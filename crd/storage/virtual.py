@@ -61,7 +61,7 @@ class KeyringStorage(Storage):
             secret = str_to_json(value)
             keyring.set_password(self._service, key, secret)
         except JSONDecodeError as e:
-            raise JSONDecodeError('Secret for key %s must be Picklable' % key)
+            raise JSONDecodeError('Secret for key %s must be Pickle-able' % key, doc=e.doc, pos=e.pos)
 
     def __getitem__(self, key: str):
         try:
@@ -94,6 +94,7 @@ class KeyringStorage(Storage):
 
     @classmethod
     def get_arguments(cls):
+        # noinspection PyPep8
         return [
             ("-s", "--service-name", dict(type=str, required=True, help="service name to use for keyring distinction")),
             ("-k", "--keys-name", dict(type=str, required=True, help="secret name to be used to keep track of keys saved to storage"))

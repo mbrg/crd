@@ -41,4 +41,5 @@ def init_storage(storage_cls: Type[Storage], **kwargs):
     except KeyError:
         raise KeyError("The following variables missing: %s" % arguments)
 
+    # noinspection PyArgumentList
     return storage_cls(**feed)

@@ -34,18 +34,19 @@ class Colors:
     GREEN = '\033[92m'
     WARNING = '\033[93m'
     FAIL = '\033[91m'
-    ENDC = '\033[0m'
+    END = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
 
 def crd_print(*args, **kwargs):
-    print(Colors.BLUE + "crd >" + Colors.ENDC, *args, **kwargs)
+    print(Colors.BLUE + "crd >" + Colors.END, *args, **kwargs)
 
 
 def parse_arguments(argv):
 
     parser = argparse.ArgumentParser()
+    # noinspection PyProtectedMember,PyPep8
     parser.add_argument('-l', '--log', default='ERROR', choices=logging._nameToLevel.keys(), help="output internal logs for debugging")
     commands = parser.add_subparsers(title="command", dest="command", help="available commands", required=True)
 
@@ -119,7 +120,6 @@ def run_get(args):
             else:
                 key = key_options[input_choice(key_options)]
 
-
             raw_secret = strg[key]
 
             if isinstance(raw_secret, dict):
@@ -129,7 +129,7 @@ def run_get(args):
                 secret = raw_secret
 
             pyperclip.copy(secret)
-            crd_print(Colors.GREEN + "Secret %s was copied to clipboard." % key + Colors.ENDC)
+            crd_print(Colors.GREEN + "Secret %s was copied to clipboard." % key + Colors.END)
         else:
             crd_print("Found no relevant secrets, please try another query.")
 
@@ -142,7 +142,7 @@ def run_set(args):
         strg = init_storage(NAME_TO_MODEL[cfg.cache['storage']], **cfg.cache)
 
         strg[args.key] = getpass.getpass("Secret: ")
-        crd_print(Colors.GREEN + "Secret %s stored safely." % args.key + Colors.ENDC)
+        crd_print(Colors.GREEN + "Secret %s stored safely." % args.key + Colors.END)
 
 
 def run_del(args):
@@ -153,16 +153,16 @@ def run_del(args):
         strg = init_storage(NAME_TO_MODEL[cfg.cache['storage']], **cfg.cache)
 
         crd_print(Colors.WARNING + "Are you sure you want to delete secret %s? (y/Y) to accept: " % args.key
-                  + Colors.ENDC, end='')
+                  + Colors.END, end='')
         choice = input()
 
         if choice in ('y', 'Y'):
             try:
                 del strg[args.key]
             except KeyError:
-                crd_print(Colors.WARNING + "Couldn't find secret %s." % args.key + Colors.ENDC)
+                crd_print(Colors.WARNING + "Couldn't find secret %s." % args.key + Colors.END)
             else:
-                crd_print(Colors.GREEN + "Secret %s deleted successfully." % args.key + Colors.ENDC)
+                crd_print(Colors.GREEN + "Secret %s deleted successfully." % args.key + Colors.END)
         else:
             crd_print("Secret %s was not deleted." % args.key)
 

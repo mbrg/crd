@@ -23,6 +23,7 @@ class AzureKeyVaultStorage(Storage):
               blob/master/authentication_sample.py
     """
 
+    # noinspection SpellCheckingInspection,SpellCheckingInspection
     CLIENT_ID = '04b07795-8ddb-461a-bbee-02f9e1bf7b46'  # Azure CLI
 
     def _init_connection(self, tenant_id):
