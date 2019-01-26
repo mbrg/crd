@@ -101,7 +101,7 @@ class AzureKeyVaultStorage(Storage):
         return len(list(self.__iter__()))
 
     def __str__(self):
-        return '%s(%s)' % (super(type(self), self).__str__(), self._vault)
+        return '%s(%s)' % (super(AzureKeyVaultStorage, self).__str__(), self._vault)
 
     @classmethod
     def get_arguments(cls):

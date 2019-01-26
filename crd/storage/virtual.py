@@ -90,7 +90,7 @@ class KeyringStorage(Storage):
         return len(self[self._keys])
 
     def __str__(self):
-        return '%s(%s)' % (super(type(self), self).__str__(), self._service)
+        return '%s(%s)' % (super(KeyringStorage, self).__str__(), self._service)
 
     @classmethod
     def get_arguments(cls):
