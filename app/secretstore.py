@@ -45,8 +45,10 @@ class SecretStore(BoxLayout):
     def init_storage(self):
         try:
             with ConfigurationManager() as cfg:
-                self.strg = AzureKeyVaultStorage(vault=cfg.cache.get("vault"), tenant_id=cfg.cache.get("tenant_id"))
-        except TypeError:
+                if all(v in cfg.cache for v in ("vault", "tenant_id")):
+                    self.strg = AzureKeyVaultStorage(vault=cfg.cache["vault"],
+                                                     tenant_id=cfg.cache["tenant_id"])
+        except (TypeError, ValueError):
             self.popup("Missing/bad configuration")
 
     def refresh_configuration(self):
