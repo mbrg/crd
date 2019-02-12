@@ -146,5 +146,6 @@ class SecretStoreApp(App):
         Clock.schedule_once(lambda x: self.secret_store.refresh_secrets(), 1.0)
 
 
-dbApp = SecretStoreApp()
-dbApp.run()
+if __name__ == "__main__":
+    dbApp = SecretStoreApp()
+    dbApp.run()
