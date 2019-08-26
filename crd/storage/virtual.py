@@ -68,7 +68,10 @@ class KeyringStorage(Storage):
             encoded_secret = keyring.get_password(self._service, key)
             secret = json_to_str(encoded_secret)
         except (TypeError, JSONDecodeError) as e:
-            raise KeyError('TypeError: ' + get_err_msg(e))
+            if key == self._keys:
+                return []
+            else:
+                raise KeyError('TypeError: ' + get_err_msg(e))
         else:
             return secret
 
