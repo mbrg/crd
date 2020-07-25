@@ -21,7 +21,7 @@ android.permissions = INTERNET
 
 orientation = all
 
-requirements = python3crystax,kivy,argparse,azure-keyvault,msrest,adal,keyring,pyperclip
+requirements = python3crystax,kivy,requests,argparse,azure-keyvault,msrest,adal,keyring,pyperclip
 
 android.ndk_path = /opt/crystax-ndk-10.3.2
 

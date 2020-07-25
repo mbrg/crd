@@ -1,0 +1,2 @@
+[run]
+omit = .idea/*,.eggs/*,.pytest_cache/*,build/*,*.egg-info/*,dist/*,tests/*,venv/*,.gitignore,config.json,*.md,setup.*
