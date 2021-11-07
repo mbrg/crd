@@ -1,4 +1,7 @@
-Hi! I'm considering to revisit this project. If you're interested, please 👍 [crd 2.0](https://github.com/mbrg/crd/issues/3)
+Hi there!
+
+I'm considering to revisit this project. If you're interested, please 👍 [crd 2.0](https://github.com/mbrg/crd/issues/3)
+
 ## *crd* - your private secret storage, with a familiar dict API
 
 A simple secret manager which uses your own secret storage as backend.
